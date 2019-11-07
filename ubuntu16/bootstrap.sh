@@ -1,1 +1,1 @@
-../bootstrap16.sh
+../shares/bootstrap16.sh
