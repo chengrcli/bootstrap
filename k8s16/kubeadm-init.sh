@@ -8,7 +8,5 @@ chmod 644 /etc/kubernetes/admin.conf
 export KUBECONFIG=/etc/kubernetes/admin.conf
 grep -q KUBECONFIG /etc/environment || echo "KUBECONFIG=/etc/kubernetes/admin.conf" >> /etc/environment
 echo "alias pod='kubectl get pod --all-namespaces'" > /etc/profile.d/alias.sh
-#kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml
-kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml
-kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
+kubectl apply -f /vagrant/kube-flannel.yml
 kubectl taint nodes --all node-role.kubernetes.io/master-
