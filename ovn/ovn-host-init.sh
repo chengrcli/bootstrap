@@ -11,7 +11,7 @@ sudo add-apt-repository ppa:rmescandon/yq
 sudo apt update
 sudo apt install -y yq openvswitch-switch-dpdk
 sudo update-alternatives --set ovs-vswitchd /usr/lib/openvswitch-switch-dpdk/ovs-vswitchd-dpdk
-sudo yq w -i /etc/netplan/50-vagrant.yaml network.ethernets.eth1.dhcp4 false
+sudo yq w -i /etc/netplan/*-vagrant.yaml network.ethernets.eth1.dhcp4 false
 sudo ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-init=true
 sudo ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-socket-mem="1024"
 sudo systemctl restart ovs-vswitchd
