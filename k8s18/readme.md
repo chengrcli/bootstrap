@@ -1,6 +1,5 @@
 ## Deploy kubernetes cluster
 
-1. Support ubuntu 16.04 only
 2. Only libvirt hypervisor is tested
 
 ### Get Started
