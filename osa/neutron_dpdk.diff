@@ -1,0 +1,51 @@
+diff --git a/tasks/providers/setup_ovs_dpdk.yml b/tasks/providers/setup_ovs_dpdk.yml
+index f99a10d..5c30a24 100644
+--- a/tasks/providers/setup_ovs_dpdk.yml
++++ b/tasks/providers/setup_ovs_dpdk.yml
+@@ -31,6 +31,7 @@
+   when:
+     - neutron_services['neutron-openvswitch-agent']['group'] in group_names
+     - '"nova_compute" in group_names'
++    - False
+ 
+ - name: Configure DPDK hugepage allocation
+   template:
+@@ -41,6 +42,7 @@
+   when:
+     - neutron_services['neutron-openvswitch-agent']['group'] in group_names
+     - '"nova_compute" in group_names'
++    - False
+ 
+ - name: Ensure DPDK service is started and enabled
+   systemd:
+@@ -50,6 +52,18 @@
+   when:
+     - neutron_services['neutron-openvswitch-agent']['group'] in group_names
+     - '"nova_compute" in group_names'
++    - False
++
++- name: set ovs runner user id
++  lineinfile:
++    path: /etc/sysconfig/openvswitch
++    regexp: '^OVS_USER_ID='
++    line: OVS_USER_ID="root:hugetlbfs"
++
++- name: remove running ovs config file
++  file:
++    path: /run/openvswitch.useropts
++    state: absent
+ 
+ - name: Ensure Open vSwitch service is started and enabled
+   systemd:
+@@ -88,9 +102,9 @@
+   file:
+     path: /var/lib/vhost_socket
+     state: directory
+-    owner: libvirt-qemu
++    owner: qemu
+     group: "{{ vhost_socket_directory_group }}"
+-    mode: "0755"
++    mode: "0777"
+   when:
+     - neutron_services['neutron-openvswitch-agent']['group'] in group_names
+     - '"nova_compute" in group_names'

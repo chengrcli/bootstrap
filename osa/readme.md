@@ -15,7 +15,7 @@ on the same node. We need at least two VMs for openstack.
   vagrant up
   ```
 
-- Setup the `deployer` and run playbook to setup openstack
+- Setup the `deployer` and run playbook to setup openstack. **NOTE:** For baremetal case, you need to manually do the steps in bootstrap.sh.
   ```
   vagrant ssh deployer
   sudo su -
@@ -26,3 +26,5 @@ on the same node. We need at least two VMs for openstack.
 
 - As with the previous steps finished, the openstack deployment is finished.
 haproxy is installed on `osa1`, openstack services are install on `osa2`
+
+- Now we can login `osa1` to launch VMs by following `launch_instance.sh`

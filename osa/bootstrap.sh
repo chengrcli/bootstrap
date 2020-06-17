@@ -6,7 +6,11 @@ systemctl mask firewalld
 mkdir /root/.ssh
 cp -rf /vagrant/ssh/* /root/.ssh/
 cp -rf /vagrant/etc /
-sudo setenforce 0
+setenforce 0
+
+yum install -y yum-versionlock
+yum versionlock kernel*
+
 
 #yum install -y e2fsprogs
 #parted -a optimal /dev/vda ---pretend-input-tty resizepart 1 yes 100%

@@ -8,11 +8,10 @@ Vagrant.configure("2") do |config|
   #config.vm.synced_folder ".", "/nfs", type: "nfs"
   config.vm.network "private_network", type: "dhcp", libvirt__network_address: "192.168.123.0"
   config.vm.provision "shell", path: "bootstrap.sh"
-  config.vm.provision "shell", path: "osa.sh"
   config.vm.provider :libvirt do |libvirt|
     libvirt.graphics_ip = '0.0.0.0'
     libvirt.cpus = 4
-    libvirt.memory = 8164
+    libvirt.memory = 14336
     libvirt.machine_virtual_size = 80
   end
   config.vm.define "deployer" do |config|
@@ -23,6 +22,7 @@ Vagrant.configure("2") do |config|
   (1 .. 2).each do |n|
     config.vm.define vm_name = "osa#{n}" do |config|
       config.vm.hostname = vm_name
+      config.vm.provision "shell", inline: "echo 1024 > /proc/sys/vm/nr_hugepages"
     end
   end
 

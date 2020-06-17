@@ -1,0 +1,752 @@
+From 51b53a4e20f9300486b0cc09b8ffc030cc287322 Mon Sep 17 00:00:00 2001
+From: chengli3 <cheng1.li@intel.com>
+Date: Tue, 9 Jun 2020 03:14:05 +0000
+Subject: [PATCH] Two nodes deployment
+
+---
+ etc/openstack_deploy/env.d/aio_metal.yml       | 161 ++++++++++
+ etc/openstack_deploy/openstack_user_config.yml |  89 ++++++
+ etc/openstack_deploy/user_secrets.yml          | 419 +++++++------------------
+ etc/openstack_deploy/user_variables.yml        |  13 +-
+ inventory/group_vars/network_hosts.yml         |   2 +
+ 5 files changed, 371 insertions(+), 313 deletions(-)
+ create mode 100644 etc/openstack_deploy/env.d/aio_metal.yml
+ create mode 100644 etc/openstack_deploy/openstack_user_config.yml
+
+diff --git a/etc/openstack_deploy/env.d/aio_metal.yml b/etc/openstack_deploy/env.d/aio_metal.yml
+new file mode 100644
+index 0000000..a0dec6d
+--- /dev/null
++++ b/etc/openstack_deploy/env.d/aio_metal.yml
+@@ -0,0 +1,161 @@
++---
++container_skel:
++  aodh_container:
++    properties:
++      is_metal: true
++  barbican_container:
++    properties:
++      is_metal: true
++  blazar_container:
++    properties:
++      is_metal: true
++  ceilometer_central_container:
++    properties:
++      is_metal: true
++  ceph-mon_container:
++    properties:
++      is_metal: true
++  ceph-rgw_container:
++    properties:
++      is_metal: true
++  cinder_api_container:
++    properties:
++      is_metal: true
++  cinder_volumes_container:
++    properties:
++      is_metal: true
++  congress_container:
++    properties:
++      is_metal: true
++  designate_container:
++    properties:
++      is_metal: true
++  etcd_container:
++    properties:
++      is_metal: true
++  galera_container:
++    properties:
++      is_metal: true
++  glance_container:
++    properties:
++      is_metal: true
++  gnocchi_container:
++    properties:
++      is_metal: true
++  haproxy_container:
++    properties:
++      is_metal: true
++  heat_api_container:
++    properties:
++      is_metal: true
++  horizon_container:
++    properties:
++      is_metal: true
++  ironic_api_container:
++    properties:
++      is_metal: true
++  ironic_server_container:
++    properties:
++      is_metal: true
++  ironic_compute_container:
++    properties:
++      is_metal: true
++  keystone_container:
++    properties:
++      is_metal: true
++  magnum_container:
++    properties:
++      is_metal: true
++  manila_container:
++    properties:
++      is_metal: true
++  manila_data_container:
++    properties:
++      is_metal: true
++  masakari_api_container:
++    properties:
++      is_metal: true
++  masakari_monitors_container:
++    properties:
++      is_metal: true
++  memcached_container:
++    properties:
++      is_metal: true
++  metering-compute_container:
++    properties:
++      is_metal: true
++  mistral_container:
++    properties:
++      is_metal: true
++  murano_container:
++    properties:
++      is_metal: true
++  neutron_agents_container:
++    properties:
++      is_metal: true
++  neutron_server_container:
++    properties:
++      is_metal: true
++  nova_api_container:
++    properties:
++      is_metal: true
++  nova_compute_container:
++    properties:
++      is_metal: true
++  octavia_server_container:
++    properties:
++      is_metal: true
++  panko_container:
++    properties:
++      is_metal: true
++  placement_container:
++    properties:
++      is_metal: true
++  repo_container:
++    properties:
++      is_metal: true
++  qdrouterd_container:
++    properties:
++      is_metal: true
++  rabbit_mq_container:
++    properties:
++      is_metal: true
++  rsyslog_container:
++    properties:
++      is_metal: true
++  sahara_container:
++    properties:
++      is_metal: true
++  swift_remote_container:
++    properties:
++      is_metal: true
++  swift_proxy_container:
++    properties:
++      is_metal: true
++  swift_acc_container:
++    properties:
++      is_metal: true
++  swift_obj_container:
++    properties:
++      is_metal: true
++  swift_cont_container:
++    properties:
++      is_metal: true
++  tacker_container:
++    properties:
++      is_metal: true
++  trove_api_container:
++    properties:
++      is_metal: true
++  unbound_container:
++    properties:
++      is_metal: true
++  utility_container:
++    properties:
++      is_metal: true
++  zun_api_container:
++    properties:
++      is_metal: true
++  zun_compute_container:
++    properties:
++      is_metal: true
+diff --git a/etc/openstack_deploy/openstack_user_config.yml b/etc/openstack_deploy/openstack_user_config.yml
+new file mode 100644
+index 0000000..d910eef
+--- /dev/null
++++ b/etc/openstack_deploy/openstack_user_config.yml
+@@ -0,0 +1,89 @@
++---
++cidr_networks:
++  dbaas: 172.29.232.0/22
++  lbaas: 172.29.252.0/22
++  container: 172.29.236.0/22
++  tunnel: 172.29.240.0/22
++  storage: 172.29.244.0/22
++
++used_ips:
++  - "172.29.232.1,172.29.232.50"
++  - "172.29.232.100"
++  - "172.29.252.1,172.29.252.50"
++  - "172.29.252.100"
++  - "172.29.236.1,172.29.236.50"
++  - "172.29.236.100"
++  - "172.29.240.1,172.29.240.50"
++  - "172.29.240.100"
++  - "172.29.244.1,172.29.244.50"
++  - "172.29.244.100"
++  - "172.29.248.1,172.29.248.50"
++  - "172.29.248.100"
++
++global_overrides:
++  internal_lb_vip_address: osa2_ip
++  # The external IP is quoted simply to ensure that the .aio file can be used as input
++  # dynamic inventory testing.
++  external_lb_vip_address: 127.0.0.1
++  management_bridge: "br-mgmt"
++  provider_networks:
++    - network:
++        container_bridge: "br-phynet1"
++        container_type: "veth"
++        type: "flat"
++        net_name: "physnet1"
++        network_interface: "phynet1_if"
++        group_binds:
++          - neutron_openvswitch_agent
++    - network:
++        container_bridge: "br-vxlan"
++        container_type: "veth"
++        container_interface: "eth10"
++        ip_from_q: "tunnel"
++        type: "vxlan"
++        range: "1:1000"
++        net_name: "vxlan"
++        group_binds:
++          - neutron_openvswitch_agent
++
++# galera, memcache, rabbitmq, utility
++shared-infra_hosts:
++  aio1:
++    ip: osa1_ip
++
++repo-infra_hosts:
++  aio1:
++    ip: osa1_ip
++
++log_hosts:
++  aio1:
++    ip: osa1_ip
++
++image_hosts:
++  aio1:
++    ip: osa1_ip
++
++compute-infra_hosts:
++  aio1:
++    ip: osa1_ip
++
++compute_hosts:
++  aio1:
++    ip: osa1_ip
++
++placement-infra_hosts:
++  aio1:
++    ip: osa1_ip
++
++network_hosts:
++  aio1:
++    ip: osa1_ip
++
++identity_hosts:
++  aio1:
++    ip: osa1_ip
++
++
++haproxy_hosts:
++  aio2:
++    ip: osa2_ip
+diff --git a/etc/openstack_deploy/user_secrets.yml b/etc/openstack_deploy/user_secrets.yml
+index 7af295a..a836056 100644
+--- a/etc/openstack_deploy/user_secrets.yml
++++ b/etc/openstack_deploy/user_secrets.yml
+@@ -1,308 +1,111 @@
+----
+-# Copyright 2014, Rackspace US, Inc.
+-#
+-# Licensed under the Apache License, Version 2.0 (the "License");
+-# you may not use this file except in compliance with the License.
+-# You may obtain a copy of the License at
+-#
+-#     http://www.apache.org/licenses/LICENSE-2.0
+-#
+-# Unless required by applicable law or agreed to in writing, software
+-# distributed under the License is distributed on an "AS IS" BASIS,
+-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-# See the License for the specific language governing permissions and
+-# limitations under the License.
+-
+-############################# WARNING ########################################
+-# The playbooks do not currently manage changing passwords in an existing
+-# environment. Changing passwords and re-running the playbooks will fail
+-# and may break your OpenStack environment.
+-############################# WARNING ########################################
+-
+-## Rabbitmq Options
+-rabbitmq_cookie_token:
+-rabbitmq_monitoring_password:
+-
+-## Tokens
+-memcached_encryption_key:
+-
+-## Galera Options
+-galera_root_password:
+-
+-## Keystone Options
+-keystone_container_mysql_password:
+-keystone_auth_admin_password:
+-keystone_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#keystone_oslomsg_notify_password:
+-
+-## Ceilometer Options:
+-ceilometer_container_db_password:
+-ceilometer_service_password:
+-ceilometer_telemetry_secret:
+-ceilometer_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#ceilometer_oslomsg_notify_password:
+-
+-## Aodh Options:
+-aodh_container_db_password:
+-aodh_service_password:
+-aodh_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#aodh_oslomsg_notify_password:
+-
+-## Cinder Options
+-cinder_container_mysql_password:
+-cinder_service_password:
+-cinder_profiler_hmac_key:
+-cinder_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#cinder_oslomsg_notify_password:
+-
+-## Ceph/rbd: a UUID to be used by libvirt to refer to the client.cinder user
+-cinder_ceph_client_uuid:
+-
+-## Glance Options
+-glance_container_mysql_password:
+-glance_service_password:
+-glance_profiler_hmac_key:
+-glance_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#glance_oslomsg_notify_password:
+-
+-## Gnocchi Options:
+-gnocchi_container_mysql_password:
+-gnocchi_service_password:
+-
+-## Heat Options
+-heat_stack_domain_admin_password:
+-heat_container_mysql_password:
+-### THE HEAT AUTH KEY NEEDS TO BE 32 CHARACTERS LONG ##
+-heat_auth_encryption_key:
+-### THE HEAT AUTH KEY NEEDS TO BE 32 CHARACTERS LONG ##
+-heat_service_password:
+-heat_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#heat_oslomsg_notify_password:
+-
+-## Ironic options
+-ironic_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#ironic_oslomsg_notify_password:
+-ironic_container_mysql_password:
+-ironic_service_password:
+-ironic_swift_temp_url_secret_key:
+-
+-## Horizon Options
+-horizon_container_mysql_password:
+-horizon_secret_key:
+-
+-## Neutron Options
+-neutron_container_mysql_password:
+-neutron_service_password:
+-neutron_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#neutron_oslomsg_notify_password:
+-neutron_ha_vrrp_auth_password:
+-
+-## Nova Options
+-nova_container_mysql_password:
+-nova_api_container_mysql_password:
+-nova_metadata_proxy_secret:
+-nova_service_password:
+-nova_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#nova_oslomsg_notify_password:
+-
+-## Octavia Options
+-octavia_container_mysql_password:
+-octavia_service_password:
+-octavia_health_hmac_key:
+-octavia_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#octavia_oslomsg_notify_password:
+-octavia_cert_client_password:
+-
+-## Sahara Options
+-sahara_container_mysql_password:
+-sahara_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#sahara_oslomsg_notify_password:
+-sahara_service_password:
+-
+-## Swift Options:
+-swift_service_password:
+-swift_dispersion_password:
+-### Once the swift cluster has been setup DO NOT change these hash values!
+-swift_hash_path_suffix:
+-swift_hash_path_prefix:
+-# Swift needs a telemetry password when using ceilometer
+-swift_oslomsg_notify_password:
+-
+-## haproxy stats password
+-haproxy_stats_password:
+-haproxy_keepalived_authentication_password:
+-
+-## Magnum Options
+-magnum_service_password:
+-magnum_galera_password:
+-magnum_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#magnum_oslomsg_notify_password:
+-magnum_trustee_password:
+-
+-## Masakari Options
+-masakari_service_password:
+-masakari_oslomsg_rpc_password:
+-masakari_container_mysql_password:
+-
+-# Mistral Options
+-mistral_service_password:
+-mistral_galera_password:
+-mistral_oslomsg_rpc_password:
+-
+-# Murano Options
+-murano_service_password:
+-murano_galera_password:
+-murano_oslomsg_rpc_password:
+-
+-## Rally Options:
+-rally_galera_password:
+-
+-## Trove Options
+-trove_galera_password:
+-trove_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#trove_oslomsg_notify_password:
+-trove_service_password:
+-trove_admin_user_password:
+-trove_taskmanager_rpc_encr_key:
+-trove_inst_rpc_key_encr_key:
+-
+-## Barbican Options
+-barbican_galera_password:
+-barbican_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#barbican_oslomsg_notify_password:
+-barbican_service_password:
+-
+-## Blazar Options
+-blazar_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your variables
+-#blazar_oslomsg_notify_password:
+-blazar_service_password:
+-blazar_container_mysql_password:
+-
+-## Designate Options
+-designate_galera_password:
+-designate_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#designate_oslomsg_notify_password:
+-designate_service_password:
+-
+-## Tacker options
+-tacker_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#tacker_oslomsg_notify_password:
+-tacker_service_password:
+-tacker_container_mysql_password:
+-
+-## Ceph RadosGW Keystone password
+-radosgw_admin_password:
+-
+-## Congress options
+-congress_container_mysql_password:
+-congress_oslomsg_rpc_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#congress_oslomsg_notify_password:
+-congress_service_password:
+-
+-## panko passwords
+-panko_container_db_password:
+-panko_service_password:
+-
+-## manila passwords
+-manila_container_mysql_password:
+-manila_oslomsg_rpc_password:
+-manila_profiler_hmac_key:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#manila_oslomsg_notify_password:
+-manila_service_password:
+-
+-# Placement Options
+-placement_service_password:
+-placement_galera_password:
+-
+-
+-#Ironic Inspector options:
+-ironic_inspector_container_mysql_password:
+-ironic_inspector_service_password:
+-ironic_inspector_swift_password:
+-
+-# zun passwords
+-zun_oslomsg_rpc_password:
+-zun_galera_password:
+-zun_service_password:
+-zun_kuryr_service_password:
+-#NOTE: Please uncomment those
+-# if you want to split rpc and notify users
+-# Please also wire the appropriate userid in
+-# your user variables.
+-#zun_oslomsg_notify_password:
++aodh_container_db_password: b4c5d540857a2f23696977f3c96fd0b53012bd7ef
++aodh_oslomsg_rpc_password: 84f15d1d2f13dc8f05c3b8161f053c3ec46b3c3294686791c2b
++aodh_service_password: be8be39ca73b06d1b41ef5ab769cd04c80e73bd973a813
++barbican_galera_password: 47d380293afbf9de87f
++barbican_oslomsg_rpc_password: 731985002809a12a97c06515b704f8cb00bf4f68290099bd3bfd73
++barbican_service_password: 66540b565b79ebcfe08e8afc74909aebcb93e9d2ac05b25832c
++blazar_container_mysql_password: ad1905cc27812d0fc73f9c8e9a0094c344a5b514e
++blazar_oslomsg_rpc_password: 5fce1bcc2ae3044fb5b
++blazar_service_password: c89cc9b91469ec6bf94dd546fa99482da3fc
++ceilometer_container_db_password: edd56ccbc670d514a
++ceilometer_oslomsg_rpc_password: bf6158f219bbc8e4ca70675c12251dc32c81d4811a3c38af8174bd67
++ceilometer_service_password: 71a00420ab393ffde5e93c8e558a2900063502a116a
++ceilometer_telemetry_secret: 38fbb331c8c4748e2b288b072b3844c8b0b1485fd69b3f605976af
++cinder_ceph_client_uuid: 603ddcdc-e662-4cce-be76-804a6aeb8187
++cinder_container_mysql_password: a4d3ee9add2f86d8887
++cinder_oslomsg_rpc_password: c57bea50c68d37df8d066ccc69
++cinder_profiler_hmac_key: e59f481aa98a6366052b8cc5170a44be
++cinder_service_password: f1dd09cd48e1ecf84530702b
++congress_container_mysql_password: 1e66f9f5253c88fd9cad32f3d1719dc5b8c65c3a37d2d23c
++congress_oslomsg_rpc_password: f5ffbecc6212b2c7914914c2a32b396ffd8c
++congress_service_password: e787dba6edddd5ad6
++designate_galera_password: 17bfbda6889a3d2c1ea28c55329c5be23f193b19744b18
++designate_oslomsg_rpc_password: a41aa4a03348aaeb7f935
++designate_service_password: b4610b0b917c1d7b82be547bd904bdc93587825aeaed60f
++galera_root_password: db874de7417a0e86c7c0a39b11816b794d247727cc
++glance_container_mysql_password: a997de564bcb568b95a047dbe7a1a2568b5e7c72bbc84f83a8c8a11609f
++glance_oslomsg_rpc_password: 663b341e7787f86026ccf959cf9edd7d0eb445b0d414bf4acea50f2d97
++glance_profiler_hmac_key: 76191feffab79bad4d22fecb
++glance_service_password: ca812e267dd5bb07abb4223491ba43ade326b5be18ebd04b23
++gnocchi_container_mysql_password: 4b1e8b6374db3f5942c55f76f0bcff8fbde7e620f4b
++gnocchi_service_password: faaf488932801505b53ad06c63f7094d2a08a905095f74f8c14c7f956b
++haproxy_keepalived_authentication_password: ba911d0f437808d47e1ed6b81c036dbbcc08903f65
++haproxy_stats_password: 5aa8713d9fb5a8e1308a9ceb5bf651ceebf86a2acdd44260b4
++heat_auth_encryption_key: 22b2ee39820d9a4f4e6ac707
++heat_container_mysql_password: 9e0f9c08f36171ba9
++heat_oslomsg_rpc_password: 27c4a2bb933e0faed943dfa4c01d9
++heat_service_password: a7039152dcb599bd1c65035d46c04cb432eb781e844
++heat_stack_domain_admin_password: a1d42ca48251bf757b5cc44a5e826e54fb24a0c4f046a32514b2
++horizon_container_mysql_password: f5060227074f04c3065ffbf40ac500d711a12a
++horizon_secret_key: bc5528847bd8f798acbf507e83bf85b6
++ironic_container_mysql_password: 384aed092fa82417673e69f6a334747b5cee9ec4c351f2a43
++ironic_inspector_container_mysql_password: a9d3fdba351140ea67e80ce1e07fab29c921e2b06afd95d9a44a72
++ironic_inspector_service_password: a2447e71a023b78c6bb02c711c04b120a32ffe8
++ironic_inspector_swift_password: e71d1fdc1d2b23d9d45799411ced281b
++ironic_oslomsg_rpc_password: 103ca496e88da6613c8df85ba7508ac34af1f2d2f7192d667466da2d8
++ironic_service_password: a1cd1481924a491c689c9bd4237b2493a9e7
++ironic_swift_temp_url_secret_key: 1e029fb3ba329110cd99cfc8c9ff1e59
++keystone_auth_admin_password: a2ac28ca43d557ed3735a64
++keystone_container_mysql_password: 96b802b84d45a2bd0eb3c9e6bbfcdbe62fcc8f80b86efd24ab3a8
++keystone_oslomsg_rpc_password: 8739c983908b607c144d9d71cc168dfe632a8c73
++magnum_galera_password: 1ee265330572dbb732f8df8414536ea63bf
++magnum_oslomsg_rpc_password: 37348c2d57dadcb3ce38d3af6fbdc8dcaae3dde148c
++magnum_service_password: a0fc2dcec516d83c04a6
++magnum_trustee_password: 8fa8bb5953c79ae68dba4987cf8a95d69c50e4f06511c50eb
++manila_container_mysql_password: c9ba88c003b52fbcc06a3882db28e6c3
++manila_oslomsg_rpc_password: 56eeaae143b7cfe4f9c84269a3186c73add4a1b077d7bea
++manila_profiler_hmac_key: b5c3e620bccfc22062979bd5
++manila_service_password: 78644d049d59fa228a8d8d1f469df3cef0dadcdad4d950e
++masakari_container_mysql_password: 9856f1b66c68c300e883da290ab8b6647213fd5735d3c80adbf9
++masakari_oslomsg_rpc_password: 9ad7c6bc05272e3e6145f4b13525405b
++masakari_service_password: 8f88f8569be5775b3e21cccf986b931961be4eb884
++memcached_encryption_key: ea176b0a5a0c5fc4c78fc37c
++mistral_galera_password: 0a9aefdabdb7c776ce4d9fb3e0e3ddf89178f8
++mistral_oslomsg_rpc_password: 9f63eee168bf764974689bab997d758e740c6e1895bb375a4
++mistral_service_password: 5598bb525b7e8039c0aad0914cb26607219953c34b465270c8c8bd037522d3
++murano_galera_password: b0ad15e8e9b983a5605a5f895ca3
++murano_oslomsg_rpc_password: 43e0e87dcc78d29da87672031bdb75b45679dc4
++murano_service_password: 411918e42b96c1514cdf52a88161b2da108d16cdc
++neutron_container_mysql_password: 00bfb01f5a28e0dd6e0d3d3302527
++neutron_ha_vrrp_auth_password: 55c8a464c8a80689
++neutron_oslomsg_rpc_password: 060188cce1d382931908d3be205d9d8cd1a33da309197205bc192f98c
++neutron_service_password: 00daa00b39e65113a0fe801adfbf1e8642cba74844
++nova_api_container_mysql_password: 942b61f40812af7d6069ea522d9dc0cadafd21
++nova_container_mysql_password: eb108eac386bdf0db34090c2218ee3a85a441af3bb049
++nova_metadata_proxy_secret: 59f3a165f02e7fce9b1d47abe723e41914424341121c50e7265c
++nova_oslomsg_rpc_password: 2e37fb0f312e5fabaf
++nova_service_password: c10990fd4ab4abf66bcf2c3ea52a8df8121c94a59
++octavia_cert_client_password: fc63a8834bf85f176610c982590ed7e782e4f56c9316696a
++octavia_container_mysql_password: 0fcdf42887eec2b85ac22136d493c180ffbdaa4b4c4b96d4a43a27c7f842
++octavia_health_hmac_key: c93dfecf33460f94a79aa7b8
++octavia_oslomsg_rpc_password: dd7a2d5a8954106739d923d8a49445916c9
++octavia_service_password: cb64befb5567402bff77c
++panko_container_db_password: 328ccafe31173d45574547f14
++panko_service_password: fa215799a77c1ea7d15c7740db65f49de331398a7ec57db3a452b9
++placement_galera_password: 234b79baaf6544ac439c92b59
++placement_service_password: d4db5c748aac6afb13f7c
++rabbitmq_cookie_token: 58abdc0ce5bbf2f904f2ff4e45830b1e033e5c51d6c824e85f801d6a65773298
++rabbitmq_monitoring_password: 36ce336b10f85bcbadb3c7c635
++radosgw_admin_password: 4680679dd0256e57af6d47174fdf2d2d32c2f10c74af4cb0b478
++rally_galera_password: 3195f1f7cd0fcb9a8c871feb0fd63c07c76debec63e750ed20
++sahara_container_mysql_password: 02dfed476a5beb0630daaa4fda3ac34279838c77602
++sahara_oslomsg_rpc_password: 4da9cc3979ab896e450eef
++sahara_service_password: 0f584e7a88c60ec047b85692828ab9be81f5ec35853977a2fadb00
++swift_dispersion_password: 9e75189cf10e2279a61f
++swift_hash_path_prefix: 0e09992d7610fda3204c2b00
++swift_hash_path_suffix: 633ee1f45f9ff218b52cac09
++swift_oslomsg_notify_password: dab66362a81bc56aa3dfbedbc60e4d8420018a15508ed5edf4cee085783bd4
++swift_service_password: fd6a350c1e874dbc91d9e9eb136d8b6a4fdbcf2c3b65b686d610445abae88a
++tacker_container_mysql_password: 1034198b5105c077e1
++tacker_oslomsg_rpc_password: d6ba3904b394b8c6ce85b0
++tacker_service_password: 8348ee811361750423acd191978b2df6f47593a2b5159662259ccae18c82
++trove_admin_user_password: 394ecf2e634370579f813993e28
++trove_galera_password: b33aadbcbcabdc23d857b520e081e64a83e7b4258f3e7f85
++trove_inst_rpc_key_encr_key: a8bf56e8125102c9ab84410f
++trove_oslomsg_rpc_password: 79480cd6324cb3aa7ffb26bf42a2117e3e298d73d318a3aa238bcb12e08502b
++trove_service_password: 3204cb700e8268030d3c7ed7070
++trove_taskmanager_rpc_encr_key: 8fde6e525caaba7127818669
++zun_galera_password: 7176ae4abe14ade487
++zun_kuryr_service_password: ad3ba5ef78d99a28df91e8c8616812dea2fe5e1e
++zun_oslomsg_rpc_password: a854b660ef30d06921a90a199
++zun_service_password: 31b5d882cbb7091607af81f
+diff --git a/etc/openstack_deploy/user_variables.yml b/etc/openstack_deploy/user_variables.yml
+index f01632a..e2d1f51 100644
+--- a/etc/openstack_deploy/user_variables.yml
++++ b/etc/openstack_deploy/user_variables.yml
+@@ -61,6 +61,9 @@ install_method: source
+ 
+ # If you wish to change the dhcp_domain configured for both nova and neutron
+ # dhcp_domain: openstacklocal
++neutron_plugin_type: ml2.ovs
++
++neutron_ml2_drivers_type: "flat,vlan,vxlan"
+ 
+ ## Common Glance Overrides when using a Swift back-end
+ # By default when 'glance_default_store' is set to 'swift' the playbooks will
+@@ -137,7 +140,7 @@ install_method: source
+ 
+ ## Example environment variable setup:
+ ## This is used by apt-cacher-ng to download apt packages:
+-# proxy_env_url: http://username:pa$$w0rd@10.10.10.9:9000/
++proxy_env_url: http://<your-name>:<your-pass>@child-prc.intel.com:914
+ 
+ ## (1) This sets up a permanent environment, used during and after deployment:
+ # no_proxy_env: "localhost,127.0.0.1,{{ internal_lb_vip_address }},{{ external_lb_vip_address }},{% for host in groups['all_containers'] %}{{ hostvars[host]['container_address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+@@ -150,10 +153,10 @@ install_method: source
+ #   no_proxy: "{{ no_proxy_env }}"
+ #
+ ## (2) This is applied only during deployment, nothing is left after deployment is complete:
+-# deployment_environment_variables:
+-#   http_proxy: "{{ proxy_env_url }}"
+-#   https_proxy: "{{ proxy_env_url }}"
+-#   no_proxy: "localhost,127.0.0.1,{{ internal_lb_vip_address }},{{ external_lb_vip_address }},{% for host in groups['keystone_all'] %}{{ hostvars[host]['container_address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
++deployment_environment_variables:
++  http_proxy: "{{ proxy_env_url }}"
++  https_proxy: "{{ proxy_env_url }}"
++  no_proxy: "localhost,127.0.0.1,{{ internal_lb_vip_address }},{{ external_lb_vip_address }},{% for host in groups['keystone_all'] %}{{ hostvars[host]['container_address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+ 
+ 
+ ## SSH connection wait time
+diff --git a/inventory/group_vars/network_hosts.yml b/inventory/group_vars/network_hosts.yml
+index 298bd21..bb4549c 100644
+--- a/inventory/group_vars/network_hosts.yml
++++ b/inventory/group_vars/network_hosts.yml
+@@ -1,3 +1,5 @@
+ openstack_host_specific_kernel_modules:
+   - name: "ebtables"
+     pattern: "CONFIG_BRIDGE_NF_EBTABLES"
++  - name: "openvswitch"
++    pattern: "CONFIG_OPENVSWITCH"
+-- 
+1.8.3.1
+
