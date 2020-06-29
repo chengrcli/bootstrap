@@ -1,5 +1,5 @@
 {
-  "registry-mirrors": ["http://10.239.12.5:6000"],
-  "insecure-registries" : ["10.239.12.5:5000"]
+  "registry-mirrors": ["http://chengdev2.sh.intel.com:6000"],
+  "insecure-registries" : ["chengdev2.sh.intel.com:5000"]
 }
 
