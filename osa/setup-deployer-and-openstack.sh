@@ -9,6 +9,9 @@ scripts/bootstrap-ansible.sh
 pushd /etc/ansible/roles/os_neutron/
   git apply /vagrant/neutron_dpdk.diff
 popd
+pushd /etc/ansible/roles/os_nova/
+  git apply /vagrant/nova_vc.diff
+popd
 # For baremeatl case, please to set the ip and phynet1_if accordin to the BM info
 osa1_ip=`host osa1 |grep "has address" | awk '{print $4}'`
 osa2_ip=`host osa2 |grep "has address" | awk '{print $4}'`
@@ -16,8 +19,9 @@ phynet1_if=eth1
 sed -i "s/osa1_ip/$osa1_ip/g" etc/openstack_deploy/openstack_user_config.yml
 sed -i "s/osa2_ip/$osa2_ip/g" etc/openstack_deploy/openstack_user_config.yml
 sed -i "s/phynet1_if/$phynet1_if/g" etc/openstack_deploy/openstack_user_config.yml
-# Before running the next steps, you need to set the proxy username/password
-# in etc/openstack_deploy/user_variables.yml (search "proxy_env_url")
+# Before running the next steps, you need to some configurations
+# MUST: set the proxy username/password in etc/openstack_deploy/user_variables.yml (search "proxy_env_url")
+# MAY: set nova_vc_enabled in etc/openstack_deploy/user_variables.yml
 cp -r /opt/openstack-ansible/etc/openstack_deploy /etc/
 cd playbooks
 openstack-ansible setup-hosts.yml

@@ -49,3 +49,19 @@ index f99a10d..5c30a24 100644
    when:
      - neutron_services['neutron-openvswitch-agent']['group'] in group_names
      - '"nova_compute" in group_names'
+diff --git a/vars/source_install.yml b/vars/source_install.yml
+index 11bc48d..0443e23 100644
+--- a/vars/source_install.yml
++++ b/vars/source_install.yml
+@@ -30,9 +30,11 @@ neutron_package_list: |-
+   {% elif (ovs_dpdk_support and ansible_pkg_mgr in ['apt', 'zypper']) %}
+   {% set _ = packages.extend(neutron_ovs_dpdk_required_packages) %}
+   {% else %}
++  {% if not install_ovs_manually | default(False) %}
+   {% set _ = packages.extend(neutron_ovs_distro_packages) %}
+   {% endif %}
+   {% endif %}
++  {% endif %}
+   {% if neutron_services['neutron-linuxbridge-agent']['group'] in group_names and neutron_services['neutron-linuxbridge-agent'].service_en | bool %}
+   {% set _ = packages.extend(neutron_lxb_distro_packages) %}
+   {% endif %}

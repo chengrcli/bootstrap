@@ -1,0 +1,26 @@
+diff --git a/templates/nova.conf.j2 b/templates/nova.conf.j2
+index 9dbaa15..de79f83 100644
+--- a/templates/nova.conf.j2
++++ b/templates/nova.conf.j2
+@@ -298,3 +298,9 @@ alias = {{item}}
+ {% endfor %}
+ {% endif %}
+ {% endif %}
++
++{% if nova_vc_enabled is defined and nova_vc_enabled %}
++[os_vif_ovs]
++vc_enabled = True
++vc_pf_bdf = {{ nova_vc_pf_bdf }}
++{% endif %}
+diff --git a/vars/redhat.yml b/vars/redhat.yml
+index 94323a9..b6b9005 100644
+--- a/vars/redhat.yml
++++ b/vars/redhat.yml
+@@ -23,6 +23,7 @@ nova_distro_packages:
+   - git
+   - iptables
+   - libxml2
++  - gcc
+ 
+ nova_devel_distro_packages:
+   - libxml2-devel

@@ -8,6 +8,7 @@ cp -rf /vagrant/ssh/* /root/.ssh/
 cp -rf /vagrant/etc /
 setenforce 0
 
+
 yum install -y yum-versionlock
 yum versionlock kernel*
 

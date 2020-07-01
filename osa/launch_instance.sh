@@ -7,24 +7,36 @@ source openrc
 
 # There is a bug of ovs/neutron: restarting ovs recreates the router/dhcp ports,
 # but not assign them to the right namespace. The fix is to delete router and subnet to let it creates ports again.
+openstack server delete cirros{1,2}
 openstack router remove subnet router1 subnet1
 openstack router delete router1
 openstack subnet delete subnet1
 openstack subnet delete provider
-openstack server delete cirros{1,2}
+openstack network delete net1
 
 # Bind eth1 to uio driver and add it to provider network bridge as a dpdk port
 # For baremetal env, vfio-pci driver is prefered (DPDK only steps)
+##################### The follow 6 lines are only needed when you when to enable provier nework ##################
 curl -LO https://github.com/DPDK/dpdk/raw/master/usertools/dpdk-devbind.py
 chmod +x dpdk-devbind.py
 modprobe uio_pci_generic
 ip link set dev eth1 down
 ./dpdk-devbind.py -b uio_pci_generic 00:06.0
 ovs-vsctl add-port br-phynet1 dpdk1 -- set Interface dpdk1 type=dpdk options:dpdk-devargs=0000:00:06.0
+#################################################################################################################
+
+############### the next 6 lines are not needed in most cases ###########
+ovs-vsctl --may-exist add-br br-phy -- set Bridge br-phy datapath_type=netdev -- set bridge br-phy fail-mode=standalone
+ip addr add 192.168.121.249/24 dev br-phy
+ip link set dev eth0 down
+./dpdk-devbind.py -b uio_pci_generic 00:05.0
+ovs-vsctl --timeout 10 add-port br-phy dpdk0 -- set Interface dpdk0 type=dpdk options:dpdk-devargs=0000:00:05.0
+ip link set br-phy up
+#######################################################################
 
 # Create image, flavor, network, router and VMs
-test -f cirros-0.5.1-x86_64-disk.img || curl -LO http://download.cirros-cloud.net/0.5.1/cirros-0.5.1-x86_64-disk.img
-openstack image create --container-format bare --disk-format qcow2 --file cirros-0.5.1-x86_64-disk.img --public cirros
+test -f /vagrant/cirros-0.5.1-x86_64-disk.img || curl -L http://download.cirros-cloud.net/0.5.1/cirros-0.5.1-x86_64-disk.img -o /vagrant/cirros-0.5.1-x86_64-disk.img
+openstack image create --container-format bare --disk-format qcow2 --file /vagrant/cirros-0.5.1-x86_64-disk.img --public cirros
 openstack flavor create  --ram 512 --disk 2 --vcpus 1 --public m1.tiny
 # DPDk only step
 openstack flavor set m1.tiny --property hw:mem_page_size=large
