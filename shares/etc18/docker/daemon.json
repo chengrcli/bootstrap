@@ -1,5 +1,0 @@
-{
-  "registry-mirrors": ["http://chengdev2.sh.intel.com:6000"],
-  "insecure-registries" : ["chengdev2.sh.intel.com:5000"]
-}
-
