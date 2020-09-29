@@ -1,1 +1,0 @@
-../shares/kubeadm-init.sh

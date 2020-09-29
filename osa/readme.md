@@ -42,3 +42,8 @@ Please first read the virtual machine deployment steps.
 - To add more computes nodes, add the nodes under `compute-infra_hosts` and `compute_hosts` in `etc/openstack_deploy/openstack_user_config.yml`.
 Then run playbook again. Needs to remove `/etc/openstack_deploy/openstack_inventory.json` before running playbook
 
+
+## Trouble shooting
+
+If nova-compute fails to start, we can check `libvirt-python` version within nova virtualenv.
+version 6.7.0 is the bad version, downgrade it to 6.1.0

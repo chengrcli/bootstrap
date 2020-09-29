@@ -1,1 +1,1 @@
-../shares/bootstrap18.sh
+../shares/bootstrap_centos.sh

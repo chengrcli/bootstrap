@@ -1,1 +1,0 @@
-../shares/pull-local-images.sh

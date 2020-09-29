@@ -1,0 +1,1 @@
+../shares/bootstrap_centos.sh

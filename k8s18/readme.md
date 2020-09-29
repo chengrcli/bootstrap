@@ -1,8 +1,8 @@
 ## Deploy kubernetes cluster
 
-2. Only libvirt hypervisor is tested
+Only libvirt hypervisor is tested
 
 ### Get Started
 
-1. Run `vagrant up`
-2. Run `bash deploy-k8s.sh`
+1. Run `vagrant up` to bring up the VMs
+2. Login the deployer VM, bring up K8s via kubespray.sh script
