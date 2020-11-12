@@ -1,18 +1,18 @@
-From 50884499042974eea40f8538f52d9f874b7096f8 Mon Sep 17 00:00:00 2001
+From 83d6da83636210bd829e8a1c154cc3b9dbec507e Mon Sep 17 00:00:00 2001
 From: chengli3 <cheng1.li@intel.com>
 Date: Tue, 9 Jun 2020 03:14:05 +0000
 Subject: [PATCH] Two nodes deployment with ovs-dpdk
 
 ---
  etc/openstack_deploy/env.d/aio_metal.yml       | 161 ++++++++++
- etc/openstack_deploy/openstack_user_config.yml | 101 ++++++
+ etc/openstack_deploy/openstack_user_config.yml | 102 ++++++
  etc/openstack_deploy/user_secrets.yml          | 419 +++++++------------------
- etc/openstack_deploy/user_variables.yml        |  25 +-
+ etc/openstack_deploy/user_variables.yml        |  27 +-
  inventory/group_vars/network_hosts.yml         |   2 +
  inventory/host_vars/aio1/neutron.yml           |  16 +
  inventory/host_vars/aio3/neutron.yml           |  16 +
  playbooks/common-playbooks/neutron.yml         |   2 +-
- 8 files changed, 428 insertions(+), 314 deletions(-)
+ 8 files changed, 431 insertions(+), 314 deletions(-)
  create mode 100644 etc/openstack_deploy/env.d/aio_metal.yml
  create mode 100644 etc/openstack_deploy/openstack_user_config.yml
  create mode 100644 inventory/host_vars/aio1/neutron.yml
@@ -187,10 +187,10 @@ index 0000000..a0dec6d
 +      is_metal: true
 diff --git a/etc/openstack_deploy/openstack_user_config.yml b/etc/openstack_deploy/openstack_user_config.yml
 new file mode 100644
-index 0000000..37a5fb5
+index 0000000..caeab99
 --- /dev/null
 +++ b/etc/openstack_deploy/openstack_user_config.yml
-@@ -0,0 +1,101 @@
+@@ -0,0 +1,102 @@
 +---
 +cidr_networks:
 +  dbaas: 172.29.232.0/22
@@ -240,6 +240,7 @@ index 0000000..37a5fb5
 +        group_binds:
 +          - neutron_openvswitch_agent
 +# To enable vlan tenant network, uncomment the following lines
++# changeme-vlan
 +#    - network:
 +#        container_bridge: "br-phynet1"
 +#        container_type: "veth"
@@ -717,7 +718,7 @@ index 7af295a..a836056 100644
 +zun_oslomsg_rpc_password: a854b660ef30d06921a90a199
 +zun_service_password: 31b5d882cbb7091607af81f
 diff --git a/etc/openstack_deploy/user_variables.yml b/etc/openstack_deploy/user_variables.yml
-index f01632a..5cfedda 100644
+index f01632a..eb72978 100644
 --- a/etc/openstack_deploy/user_variables.yml
 +++ b/etc/openstack_deploy/user_variables.yml
 @@ -61,6 +61,9 @@ install_method: source
@@ -735,7 +736,7 @@ index f01632a..5cfedda 100644
  ## Example environment variable setup:
  ## This is used by apt-cacher-ng to download apt packages:
 -# proxy_env_url: http://username:pa$$w0rd@10.10.10.9:9000/
-+proxy_env_url: http://<your-name>:<your-pass>@child-prc.intel.com:914
++proxy_env_url: http://<proxy_addr>:<port>
  
  ## (1) This sets up a permanent environment, used during and after deployment:
  # no_proxy_env: "localhost,127.0.0.1,{{ internal_lb_vip_address }},{{ external_lb_vip_address }},{% for host in groups['all_containers'] %}{{ hostvars[host]['container_address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
@@ -754,22 +755,24 @@ index f01632a..5cfedda 100644
  
  
  ## SSH connection wait time
-@@ -191,3 +194,15 @@ install_method: source
+@@ -191,3 +194,17 @@ install_method: source
  
  # Keepalived default IP address used to check its alive status (IPv4 only)
  # keepalived_ping_address: "193.0.14.129"
-+ovs_dpdk_support: True
++# changeme-dpdk
++ovs_dpdk_support: False
 +ovs_dpdk_pci_addresses:
 +  - "0000:00:06.0"
 +ovs_dpdk_lcore_mask: "0x0000003"
 +ovs_dpdk_pmd_cpu_mask: "0x00000002"
 +ovs_dpdk_socket_mem: "0,0"
 +
++# changeme-customize
 +# To support vc
 +requirements_git_url: https://raw.githubusercontent.com/cheng1li/requirements/vc/upper-constraints.txt
-+nova_vc_enabled: True
++nova_vc_enabled: False
 +nova_vc_pf_bdf: '0000:2a:00.0'
-+install_ovs_manually: True
++install_ovs_manually: False
 diff --git a/inventory/group_vars/network_hosts.yml b/inventory/group_vars/network_hosts.yml
 index 298bd21..bb4549c 100644
 --- a/inventory/group_vars/network_hosts.yml
