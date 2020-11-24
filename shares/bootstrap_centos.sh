@@ -20,7 +20,8 @@ then
   mkdir -p /home/vagrant/.ssh /root/.ssh
   cp -f /vagrant/ssh/id_rsa /home/vagrant/.ssh/
   cp -f /vagrant/ssh/id_rsa /root/.ssh/
-  chown -R vagrant:vagrant /home/vagrant/.ssh/ /root/.ssh
   cat /vagrant/ssh/authorized_keys >> /home/vagrant/.ssh/authorized_keys
   cat /vagrant/ssh/authorized_keys >> /root/.ssh/authorized_keys
+  chown -R vagrant:vagrant /home/vagrant/.ssh/
+  chown -R root:root /root/.ssh
 fi
