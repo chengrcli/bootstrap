@@ -17,7 +17,7 @@ openstack network delete net1
 # Bind eth1 to uio driver and add it to provider network bridge as a dpdk port
 # For baremetal env, vfio-pci driver is prefered (DPDK only steps)
 ##################### The follow 6 lines are only needed when you when to enable provier nework ##################
-curl -LO https://github.com/DPDK/dpdk/raw/master/usertools/dpdk-devbind.py
+curl -LO https://raw.githubusercontent.com/DPDK/dpdk/main/usertools/dpdk-devbind.py
 chmod +x dpdk-devbind.py
 modprobe uio_pci_generic
 ip link set dev eth1 down
