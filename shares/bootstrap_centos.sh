@@ -2,6 +2,10 @@ set -ex
 
 systemctl set-default multi-user.target
 
+# stop NetworkManager as it has bad effect to many services, i.e. ovs
+systemctl stop NetworkManager.service
+systemctl disable NetworkManager.service
+
 # make eth0 as the default gw interface
 echo "DEFROUTE=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth0
 systemctl restart network
