@@ -1,24 +1,24 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-$nodes=1
+$nodes=3
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/centos7"
   config.vm.synced_folder ".", "/vagrant", type: "rsync"
+  config.vm.synced_folder ".", "/nfs", type: "nfs"
   config.vm.provision "shell", path: "bootstrap.sh"
+  config.vm.provision "shell", inline: "echo 1024 > /proc/sys/vm/nr_hugepages"
+  config.vm.provision "shell", inline: "echo 'vm.nr_hugepages=1024' > /etc/sysctl.d/hugepages.conf"
   config.vm.network "private_network", type: "dhcp", libvirt__network_address: "192.168.123.0"
   config.vm.provider :libvirt do |libvirt|
     libvirt.graphics_ip = '0.0.0.0'
-    libvirt.cpus = 4
-    libvirt.memory = 8192
+    libvirt.cpus = 24
+    libvirt.memory = 18192
     libvirt.machine_virtual_size = 200
   end
 
   config.vm.define "default" do |config|
     config.vm.hostname = "ovsdpdk"
-    config.vm.synced_folder ".", "/nfs", type: "nfs"
-    config.vm.provision "shell", inline: "echo 1024 > /proc/sys/vm/nr_hugepages"
-    config.vm.provision "shell", inline: "echo 'vm.nr_hugepages=1024' > /etc/sysctl.d/hugepages.conf"
   end
   (1 .. $nodes).each do |n|
     config.vm.define vm_name = "ovsdpdk#{n}" do |config|

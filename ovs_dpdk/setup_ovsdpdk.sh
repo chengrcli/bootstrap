@@ -109,12 +109,9 @@ systemctl restart openvswitch
 ###########################################
 if [ "$bootstrap" -gt 0 ]
 then
-  test -f /vagrant/dpdk-devbind.py ||curl -LO https://raw.githubusercontent.com/DPDK/dpdk/main/usertools/dpdk-devbind.py
-  chmod +x /vagrant/dpdk-devbind.py
-  modprobe uio_pci_generic
-  ip link set dev eth1 down
-  yum install -y pciutils
-  /vagrant/dpdk-devbind.py -b uio_pci_generic 00:06.0
+  # we use driverctl instead of the old dpdk-devbind way
+  yum install -y driverctl
+  driverctl set-override 0000:00:06.0 uio_pci_generic
   ovs-vsctl add-br br1 -- set bridge br1 datapath_type=netdev
   ovs-vsctl add-port br1 dpdk1 -- set Interface dpdk1 type=dpdk options:dpdk-devargs=0000:00:06.0
 fi
