@@ -3,7 +3,7 @@ set -ex
 ## disable graphic
 sudo systemctl set-default multi-user.target
 
-sudo cp -rf /vagrant/etc /
+echo "nameserver 192.168.121.1" | sudo tee /etc/resolv.conf
 
 # remove externel dns nameservers, use local net dns, most likely be 192.168.121.1
 if [ -f /etc/systemd/resolved.conf ]

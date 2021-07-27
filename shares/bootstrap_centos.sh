@@ -1,5 +1,7 @@
 set -ex
 
+# CENTOS_VERSION=`cat /etc/os-release |grep -oP '(?<=VERSION_ID=")\d+'`
+
 systemctl set-default multi-user.target
 
 # stop NetworkManager as it has bad effect to many services, i.e. ovs
