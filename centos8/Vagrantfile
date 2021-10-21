@@ -1,28 +1,26 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+$nodes=2
 Vagrant.configure("2") do |config|
-  config.vm.box = "generic/centos7"
-  config.vm.synced_folder ".", "/vagrant", type: "rsync"
+  config.vm.box = "generic/centos8"
+  #config.vm.synced_folder ".", "/vagrant"
   #config.vm.synced_folder ".", "/nfs", type: "nfs"
-  config.vm.provision "shell", path: "bootstrap.sh"
+  #config.vm.provision "shell", path: "bootstrap.sh"
   config.vm.network "private_network", type: "dhcp", libvirt__network_address: "192.168.123.0"
-  #config.vm.network "private_network", libvirt__network_name: "private-125"
   config.vm.provider :libvirt do |libvirt|
     libvirt.graphics_ip = '0.0.0.0'
-    libvirt.cpus = 12
+    libvirt.cpus = 4
     libvirt.memory = 18192
-    libvirt.machine_virtual_size = 20
+    libvirt.machine_virtual_size = 200
   end
 
   config.vm.define "default" do |config|
-    config.vm.hostname = 'centos7'
+    config.vm.hostname = "centos8"
   end
-
-  (1 .. 2).each do |n|
-    config.vm.define vm_name = "centos#{n}" do |config|
+  (1 .. $nodes).each do |n|
+    config.vm.define vm_name = "centos8#{n}" do |config|
       config.vm.hostname = vm_name
     end
   end
-
 end

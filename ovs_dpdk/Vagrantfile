@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-$nodes=3
+$nodes=7
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/centos7"
   config.vm.synced_folder ".", "/vagrant", type: "rsync"
@@ -10,6 +10,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: "echo 1024 > /proc/sys/vm/nr_hugepages"
   config.vm.provision "shell", inline: "echo 'vm.nr_hugepages=1024' > /etc/sysctl.d/hugepages.conf"
   config.vm.network "private_network", type: "dhcp", libvirt__network_address: "192.168.123.0"
+  config.vm.network "private_network", libvirt__network_name: "private-125"
   config.vm.provider :libvirt do |libvirt|
     libvirt.graphics_ip = '0.0.0.0'
     libvirt.cpus = 24

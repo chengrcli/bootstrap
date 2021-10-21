@@ -1,1 +1,1 @@
-../shares/bootstrap16.sh
+../shares/bootstrap_ubuntu.sh

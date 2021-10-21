@@ -90,13 +90,13 @@ pushd $ovs_dir
   make install
   pushd rhel
     # setup ovs services
-    cp etc_openvswitch_default.conf /etc/openvswitch/default.conf
-    cp usr_lib_systemd_system_openvswitch.service /usr/lib/systemd/system/openvswitch.service
-    cp usr_lib_systemd_system_ovsdb-server.service /usr/lib/systemd/system/ovsdb-server.service
+    cp -f etc_openvswitch_default.conf /etc/openvswitch/default.conf
+    cp -f usr_lib_systemd_system_openvswitch.service /usr/lib/systemd/system/openvswitch.service
+    cp -f usr_lib_systemd_system_ovsdb-server.service /usr/lib/systemd/system/ovsdb-server.service
     sed -i '/dpdk/d' usr_lib_systemd_system_ovs-vswitchd.service.in
-    cp usr_lib_systemd_system_ovs-vswitchd.service.in /usr/lib/systemd/system/ovs-vswitchd.service
-    cp usr_share_openvswitch_scripts_sysconfig.template /etc/sysconfig/openvswitch
-    cp usr_lib_systemd_system_ovs-delete-transient-ports.service /usr/lib/systemd/system/ovs-delete-transient-ports.service
+    cp -f usr_lib_systemd_system_ovs-vswitchd.service.in /usr/lib/systemd/system/ovs-vswitchd.service
+    cp -f usr_share_openvswitch_scripts_sysconfig.template /etc/sysconfig/openvswitch
+    cp -f usr_lib_systemd_system_ovs-delete-transient-ports.service /usr/lib/systemd/system/ovs-delete-transient-ports.service
   popd
 popd
 systemctl daemon-reload

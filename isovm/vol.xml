@@ -1,0 +1,12 @@
+<volume type='file'>
+  <name>ivmdisk2.img</name>
+  <target>
+    <path>/home/libvirt_images/ivmdisk2.img</path>
+    <format type='qcow2'/>
+  </target>
+  <backingStore>
+    <path>/home/libvirt_images/pps-centos1810.img</path>
+    <format type='qcow2'/>
+  </backingStore>
+</volume>
+
