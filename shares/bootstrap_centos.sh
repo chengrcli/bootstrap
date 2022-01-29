@@ -10,7 +10,10 @@ systemctl disable NetworkManager.service
 
 # make eth0 as the default gw interface
 echo "DEFROUTE=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-systemctl restart network
+if systemctl is-active network.service;
+then
+  systemctl restart network
+fi
 
 # stop firewalld
 systemctl stop firewalld
