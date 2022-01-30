@@ -1,3 +1,4 @@
 .Vagrant
 .vagrant
 */.ssh_config
+shares/ssh/

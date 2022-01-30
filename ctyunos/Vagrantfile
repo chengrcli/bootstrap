@@ -3,12 +3,12 @@
 
 Vagrant.configure("2") do |config|
   # config.vm.guest = "centos"
-  config.vm.box = "ctyunos"
+  config.vm.box = "ctyunos2"
   config.vm.synced_folder ".", "/vagrant", type: "rsync"
   #config.vm.synced_folder ".", "/nfs", type: "nfs"
   config.vm.provision "shell", path: "bootstrap.sh"
   config.vm.network "private_network", libvirt__network_name: "private-123", type: "dhcp", libvirt__network_address: "192.168.123.0/255.255.255.0"
-  config.vm.network "private_network", libvirt__network_name: "private-129", type: "dhcp", libvirt__network_address: "192.168.120.0/255.255.255.0"
+  config.vm.network "private_network", libvirt__network_name: "private-124", type: "dhcp", libvirt__network_address: "192.168.124.0/255.255.255.0"
   config.vm.provider :libvirt do |libvirt|
     libvirt.graphics_ip = '0.0.0.0'
     libvirt.cpus = 12

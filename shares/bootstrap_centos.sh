@@ -8,8 +8,9 @@ systemctl set-default multi-user.target
 systemctl stop NetworkManager.service
 systemctl disable NetworkManager.service
 
-# make eth0 as the default gw interface
-echo "DEFROUTE=yes" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+# set the default gw interface
+echo 'GATEWAY="192.168.121.1"' > /etc/sysconfig/network
+echo 'supersede domain-name-servers 192.168.121.1;' > /etc/dhcp/dhclient.conf
 if systemctl is-active network.service;
 then
   systemctl restart network
