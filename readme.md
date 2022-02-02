@@ -10,7 +10,7 @@ This repo has some vagrants to set virtual machines for practice purpose.
 
 ## Setup vagrant and libvirt
 
-CentOS 7 and ubuntu 18.04 are tested as host
+CentOS 7 are tested as host
 
 ```bash
 git clone https://github.com/chengrcli/bootstrap.git

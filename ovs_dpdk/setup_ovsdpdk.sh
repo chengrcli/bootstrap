@@ -29,7 +29,7 @@ case $OVS_VERSION in
     ovs_packet_file=v${OVS_VERSION}.tar.gz
     ;;
   master )
-    DPDK_VERSION=20.11
+    DPDK_VERSION=21.11
     ovs_packet_file=${OVS_VERSION}.tar.gz
     ;;
 esac

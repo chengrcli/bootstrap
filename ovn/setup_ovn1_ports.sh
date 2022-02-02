@@ -1,3 +1,5 @@
+set -ex
+
 ip netns add vm1
 ovs-vsctl add-port br-int vm1 -- set interface vm1 type=internal
 ip link set vm1 address 02:ac:10:ff:01:30
@@ -17,7 +19,7 @@ ovs-vsctl set Interface vm3 external_ids:iface-id=inside-vm3
 ip netns exec vm3 dhclient -r
 ip netns exec vm3 dhclient vm3
 ip netns exec vm3 ip addr show vm3
-ip netns exec vm3 ip route add default via 172.16.255.194
+ip netns exec vm3 ip route add default via 172.16.255.193
 ip netns exec vm3 ip route show
 
 # set up gateway
