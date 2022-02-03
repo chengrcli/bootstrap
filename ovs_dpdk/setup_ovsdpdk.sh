@@ -46,7 +46,8 @@ dpdk_dir=dpdk-$DPDK_VERSION
 test -f /vagrant/$dpdk_packet_file || curl -L -o /vagrant/$dpdk_packet_file $dpdk_packet_url
 tar -xzvf /vagrant/$dpdk_packet_file
 pushd $dpdk_dir
-  yum install -y meson  numactl-devel
+  yum install -y python3-pip numactl-devel
+  pip3 install meson ninja pyelftools
   meson --prefix /usr build
   ninja -C build
   ninja -C build install
@@ -71,7 +72,7 @@ pushd $ovs_dir
   ./boot.sh
   # upgrade pkgconfig if DPDK Version is 20.11
   # old version may be installed as dependency in future
-  if [ "$DPDK_VERSION" == "20.11" ]
+  if [ "$DPDK_VERSION" \> "19.11" ] && [ `pkg-config --version` \< "0.29" ]
   then
     test -f /vagrant/pkg-config-0.29.1.tar.gz || curl -L https://pkg-config.freedesktop.org/releases/pkg-config-0.29.1.tar.gz -o /vagrant/pkg-config-0.29.1.tar.gz
     tar -xzvf /vagrant/pkg-config-0.29.1.tar.gz -C ..
@@ -111,7 +112,8 @@ if [ "$bootstrap" -gt 0 ]
 then
   # we use driverctl instead of the old dpdk-devbind way
   yum install -y driverctl
-  driverctl set-override 0000:00:06.0 uio_pci_generic
+  eth1_bdf=`ethtool -i eth1 |grep bus-info | awk '{print $2}'`
+  driverctl set-override $eth1_bdf uio_pci_generic
   ovs-vsctl add-br br1 -- set bridge br1 datapath_type=netdev
-  ovs-vsctl add-port br1 dpdk1 -- set Interface dpdk1 type=dpdk options:dpdk-devargs=0000:00:06.0
+  ovs-vsctl add-port br1 dpdketh1 -- set Interface dpdketh1 type=dpdk options:dpdk-devargs=$eth1_bdf
 fi
