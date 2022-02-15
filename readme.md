@@ -40,7 +40,7 @@ vagrant up
         - Edit the /etc/default/grub file and configure the GRUB_CMDLINE_LINUX option. Delete the rhgb quiet and add console=tty0 console=ttyS0,115200n8 to the option.
         - Run `grub2-mkconfig -o /boot/grub2/grub.cfg` to save changes
     - install `rsync`
-- shutdown VM then we get the qcow2 img `ivmdisk.img`
+- shutdown VM then we get the qcow2 img `ivmdisk.img`, need to rename it to name `box.img`
 - create metadata.json
     ```json
     {
@@ -57,7 +57,7 @@ vagrant up
     config.vm.guest = "centos"
     config.vm.provider :libvirt do |v, override|
         v.disk_bus = "virtio"
-        v.host = "vagrant"
+        v.host = ""
         v.connect_via_ssh = false
         # v.storage_pool_name = "default"
         v.driver = "kvm"
@@ -67,7 +67,7 @@ vagrant up
     end
     end
     ```
-- tar the box file. `tar cvzf custom_box.box ./metadata.json ./Vagrantfile ./ivmdisk.img`
+- tar the box file. `tar cvzf custom_box.box ./metadata.json ./Vagrantfile ./box.img`
 
 ## References
 
