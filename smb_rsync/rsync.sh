@@ -1,1 +1,1 @@
-rsync -arv /mnt/share/ /mnt/share_bak
+rsync -arv /samba/ /samba_bak

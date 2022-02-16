@@ -1,8 +1,13 @@
 set -ex
+
+# you can mount disk on /samba and /samba_bak
+sudo mkdir -p /samba /samba_bak
+
 sudo yum install -y samba samba-client cifs-utils
 sudo mkdir -p /samba/pub
 sudo chown -R nobody:nobody /samba/pub
 sudo cp /vagrant/smb.conf /etc/samba/smb.conf
+sudo systemctl enable smb nmb
 sudo systemctl restart smb nmb
 sudo cp /vagrant/rsync.sh /etc/cron.daily/
 
