@@ -74,6 +74,7 @@ then
     ninja -C build
     ninja -C build install
     ldconfig
+    pkg-config --modversion libdpdk
   popd
 fi
 
@@ -103,7 +104,7 @@ else
 fi
 git clone --depth=1 -b $TAG https://github.com/openvswitch/ovs.git
 pushd ovs
-  yum install -y python3-devel numactl-devel
+  yum install -y python3-devel numactl-devel elfutils-libelf-devel
   ./boot.sh
   # upgrade pkgconfig if DPDK Version is 20.11
   # old version may be installed as dependency in future
